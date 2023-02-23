@@ -4,15 +4,17 @@ import Chatbot from "../../components/Chatbot";
 
 const Chat = ({session}) => {
   const router = useRouter();
-  const { pid } = router.query;
+  const { pid, url, name } = router.query;
 
   return (
     <>
      <div className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
       <div>
-        <Chatbot />
+        <Chatbot url={url} name={name}/>
       </div>
       <p>Chat: {pid}</p>
+      <p>url: {url}</p>
+      <p>file_name: {name}</p>
       </div>
     </>
   );

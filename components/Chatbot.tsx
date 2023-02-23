@@ -1,9 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const Chatbot = () => {
+const Chatbot = ({name, url}) => {
   const [messages, setMessages] = useState([]);
   const [userMessage, setUserMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [history, setHistory] = useState([]);
+
+  const messageListRef = useRef(null);
+  const textAreaRef = useRef(null);
+
+  useEffect(() => {
+    const messageList = messageListRef.current;
+    messageList.scrollTop = messageList.scrollHeight;
+  }, [messages]);
+
+  // Focus on text field on load
+  useEffect(() => {
+    textAreaRef.current.focus();
+  }, []);
+
+  const handleError = () => {
+    setMessages([
+      ...messages,
+      { "message": "Oops! There seems to be an error. Please try again.", "user": false }
+    ]);
+    setUserMessage('');
+    setLoading(false);
+  }
 
   const handleMessage = async () => {
     setLoading(true);
@@ -12,16 +35,32 @@ const Chatbot = () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ message: userMessage })
+      body: JSON.stringify({
+        question: userMessage,
+        history: history,
+        file_name: name,
+        url: url,
+        dname : "Report",
+      })
     });
 
+    if (!response.ok) {
+      handleError();
+      return;
+    }
+    setUserMessage('');
+
     const data = await response.json();
+    console.log(data);
+    if (data.result.error === "Unauthorized") {
+      handleError();
+      return;
+    }
     setMessages([
         ...messages,
-        { message: userMessage, user: true },
-        { message: data.response, user: false }
+        { "message": userMessage, "user": true },
+        { "message": data.result.answer, "user": false }
       ]);
-    setUserMessage('');
     setLoading(false);
   };
 
@@ -35,9 +74,16 @@ const Chatbot = () => {
     }
   };
 
+  useEffect(() => {
+    if (messages.length >= 3) {
+      console.log(history)
+      setHistory([[messages[messages.length - 2].message, messages[messages.length - 1].message]]);
+    }
+  }, [messages])
+
   return (
     <div className="bg-gray-100 p-4 rounded-lg shadow-md">
-      <div className="mb-4">
+      <div ref={messageListRef} className="mb-4">
         {messages.map((message, i) => (
           <div
             key={i}
@@ -70,6 +116,7 @@ const Chatbot = () => {
           type="text"
           className="flex-grow rounded-lg border-gray-300 border p-2 mr-2"
           value={userMessage}
+          ref={textAreaRef}
           onChange={(e) => setUserMessage(e.target.value)}
           onKeyDown={handleEnter}
         />

@@ -9,8 +9,7 @@ const Report = ({ name, url }: Report) => (
     href={`/chat/${encodeURIComponent(name)}?name=${encodeURIComponent(name)}&url=${encodeURIComponent(url)}`}
     className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
   >
-    <h3 className="text-2xl font-bold">{name} &rarr;</h3>
-    <p className="mt-4 text-xl">{url}</p>
+    <h3 className="text-2xl font-bold">{name}</h3>
   </Link>
 );
 

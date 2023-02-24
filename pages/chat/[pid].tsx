@@ -2,9 +2,9 @@ import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Chatbot from "../../components/Chatbot";
 
-const Chat = ({session}) => {
+const Chat = () => {
   const router = useRouter();
-  const { pid, url, name } = router.query;
+  const { url, name } = router.query;
 
   return (
     <>
@@ -12,9 +12,6 @@ const Chat = ({session}) => {
       <div>
         <Chatbot url={url} name={name}/>
       </div>
-      <p>Chat: {pid}</p>
-      <p>url: {url}</p>
-      <p>file_name: {name}</p>
       </div>
     </>
   );

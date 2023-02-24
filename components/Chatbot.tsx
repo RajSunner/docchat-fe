@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
+import { CircularProgress } from "@mui/material";
 
-const Chatbot = ({name, url}) => {
+const Chatbot = ({ name, url }) => {
   const [messages, setMessages] = useState([]);
-  const [userMessage, setUserMessage] = useState('');
+  const [userMessage, setUserMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
 
@@ -22,33 +23,36 @@ const Chatbot = ({name, url}) => {
   const handleError = () => {
     setMessages([
       ...messages,
-      { "message": "Oops! There seems to be an error. Please try again.", "user": false }
+      {
+        message: "Oops! There seems to be an error. Please try again.",
+        user: false,
+      },
     ]);
-    setUserMessage('');
+    setUserMessage("");
     setLoading(false);
-  }
+  };
 
   const handleMessage = async () => {
     setLoading(true);
-    const response = await fetch('/api/chat', {
-      method: 'POST',
+    const response = await fetch("/api/chatF", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         question: userMessage,
         history: history,
         file_name: name,
         url: url,
-        dname : "Report",
-      })
+        dname: "article",
+      }),
     });
 
     if (!response.ok) {
       handleError();
       return;
     }
-    setUserMessage('');
+    setUserMessage("");
 
     const data = await response.json();
     console.log(data);
@@ -57,10 +61,11 @@ const Chatbot = ({name, url}) => {
       return;
     }
     setMessages([
-        ...messages,
-        { "message": userMessage, "user": true },
-        { "message": data.result.answer, "user": false }
-      ]);
+      ...messages,
+      { message: userMessage, user: true },
+      // { message: data.result.answer, user: false },
+      { message: data.result, user: false }, // this is for testing
+    ]);
     setLoading(false);
   };
 
@@ -73,33 +78,36 @@ const Chatbot = ({name, url}) => {
       e.preventDefault();
     }
   };
-
   useEffect(() => {
     if (messages.length >= 3) {
-      console.log(history)
-      setHistory([[messages[messages.length - 2].message, messages[messages.length - 1].message]]);
+      setHistory([
+        [
+          messages[messages.length - 2].message,
+          messages[messages.length - 1].message,
+        ],
+      ]);
     }
-  }, [messages])
+  }, [messages]);
 
   return (
-    <div className="bg-gray-100 p-4 rounded-lg shadow-md">
+    <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-5">
       <div ref={messageListRef} className="mb-4">
         {messages.map((message, i) => (
           <div
             key={i}
             className={`flex ${
-              message.user ? 'justify-end' : 'justify-start'
+              message.user ? "justify-end" : "justify-start"
             } mb-2`}
           >
             <div
               className={`bg-gray-300 p-2 rounded-lg ${
-                message.user ? 'bg-gray-500 text-white' : ''
+                message.user ? "bg-gray-500 text-white" : ""
               }`}
             >
               {message.user ? (
                 <div>
-                    <span className="font-bold">User: </span>
-                    {message.message}
+                  <span className="font-bold">User: </span>
+                  {message.message}
                 </div>
               ) : (
                 <div>
@@ -127,7 +135,7 @@ const Chatbot = ({name, url}) => {
           Send
         </button>
       </div>
-      {loading && <div className="text-center">Loading...</div>}
+      {loading && <div className="text-center"><CircularProgress /></div>}
     </div>
   );
 };

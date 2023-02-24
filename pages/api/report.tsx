@@ -1,7 +1,6 @@
 import { getSession } from "next-auth/react";
 import client from "../../lib/prismadb";
 
-
 async function createReport(req, res) {
   const session = await getSession({ req });
   if (!session) {
@@ -18,7 +17,7 @@ async function createReport(req, res) {
       userId: user.id,
       name: req.body.name,
       url: req.body.url,
-      embedded: false
+      embedded: false,
     },
   });
 

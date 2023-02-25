@@ -1,33 +1,32 @@
-export default function FileUpload({ onChange, onClick }) {
+export default function FileUpload({ onChange, onClick  }) {
   return (
     <>
       <div className="p-8 mt-5 md:mt-0">
-        <form action="#" method="POST">
+        <form method="post" onSubmit={onClick}>
           <div className="shadow sm:overflow-hidden sm:rounded-md">
             <div className="space-y-6 bg-white px-4 py-5 sm:p-6">
               <div>
                 <label
-                  htmlFor="about"
+                  htmlFor="name"
                   className="block text-sm font-medium text-gray-700"
                 >
                   Name
-                </label>
-                <div className="mt-1">
                   <input
                     type="text"
-                    id="about"
-                    name="about"
+                    id="name"
+                    name="name"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     placeholder="Name of the document / report."
                     defaultValue={""}
-                  required />
-                </div>
+                    required
+                  />
+                </label>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <p className="block text-sm font-medium text-gray-700">
                   Document
-                </label>
+                </p>
                 <div className="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
                   <div className="space-y-1 text-center">
                     <svg
@@ -61,16 +60,14 @@ export default function FileUpload({ onChange, onClick }) {
                       </label>
                       <p className="pl-1">or drag and drop</p>
                     </div>
-                    <p className="text-xs text-gray-500">
-                      PDF files only
-                    </p>
+                    <p className="text-xs text-gray-500">PDF files only</p>
                   </div>
                 </div>
               </div>
             </div>
             <div className="bg-gray-50 px-4 py-3 text-right sm:px-6">
               <button
-                onClick={onClick}
+                type="submit"
                 className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
                 Upload

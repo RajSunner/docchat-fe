@@ -9,7 +9,7 @@ async function createReport(req, res) {
   const user = await client.user.findUnique({
     where: { email: session.user?.email },
   });
-  if (!req.body.name || !req.body.url) {
+  if (!req.body.name || !req.body.url || !req.body.fname) {
     return res.status(500).json({ error: "validation error" });
   }
   const post = await client.report.create({
@@ -17,7 +17,7 @@ async function createReport(req, res) {
       userId: user.id,
       name: req.body.name,
       url: req.body.url,
-      embedded: false,
+      fname: req.body.fname,
     },
   });
 

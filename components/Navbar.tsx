@@ -4,19 +4,21 @@ import Link from "next/link";
 import { Fragment, useState, useEffect } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import SlideOver from "./SlideOver";
-import Router from "next/router";
+import { useRouter } from "next/router";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Navbar() {
+  const router = useRouter();
   const { status, data: session } = useSession();
   const [open, setOpen] = useState(false);
 
   const [file, setFile] = useState(null);
 
   const [name, setName] = useState("");
+  const [fname, setFname] = useState("");
   const [url, setUrl] = useState("");
 
   const changeHandler = (event) => {
@@ -29,10 +31,10 @@ export default function Navbar() {
   }
 
   useEffect(() => {
-    if (name && url) {
+    if (name && url && fname) {
       handleReport();
     }
-  }, [name, url]);
+  }, [name, url, fname]);
 
   const handleReport = async () => {
     const response = await fetch("api/report", {
@@ -40,20 +42,23 @@ export default function Navbar() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, url }),
+      body: JSON.stringify({ name, url, fname}),
     });
 
     if (!response.ok) {
       return;
     }
     const data = await response.json();
-    console.log(data);
     setOpen(false);
-    Router.reload();
+    router.replace(router.asPath);
   };
 
-  const handleSubmission = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const form = e.target;
+    const data2 = new FormData(form);
+    const formJson = Object.fromEntries(data2.entries());
+    setFname(JSON.stringify(formJson.name));
     const data = new FormData();
     data.append("file", file);
     data.append("upload_preset", process.env.NEXT_PUBLIC_PRESET);
@@ -73,112 +78,118 @@ export default function Navbar() {
 
   return (
     <>
-    <nav className="bg-gray-800">
-      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-        <div className="relative flex h-16 items-center justify-between">
-          <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-            {/* Mobile menu button*/}
-          </div>
-          <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex flex-shrink-0 items-center">
-              <Link href="/">
-                <img
-                  className="block h-8 w-auto lg:hidden"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                  alt="Your Company"
-                />
-              </Link>
-              <Link href="/">
-                <img
-                  className="hidden h-8 w-auto lg:block"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                  alt="Your Company"
-                />
-              </Link>
+      <nav className="bg-gray-800">
+        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+          <div className="relative flex h-16 items-center justify-between">
+            <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
+              {/* Mobile menu button*/}
             </div>
-            <div className="hidden sm:ml-6 sm:block">
-              <div className="flex space-x-4"></div>
-            </div>
-          </div>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            <Menu as="div" className="relative ml-3">
-              <div>
-                <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                  <span className="sr-only">Open menu</span>
-                  {session ? (
-                    <Image
-                      className="h-8 w-8 rounded-full"
-                      src={session.user?.image}
-                      alt="profile pic"
-                      width={500}
-                      height={500}
-                    />
-                  ) : (
-                    <></>
-                  )}
-                </Menu.Button>
+            <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+              <div className="flex flex-shrink-0 items-center">
+                <Link href="/">
+                  <img
+                    className="block h-8 w-auto lg:hidden"
+                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                    alt="Your Company"
+                  />
+                </Link>
+                <Link href="/">
+                  <img
+                    className="hidden h-8 w-auto lg:block"
+                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                    alt="Your Company"
+                  />
+                </Link>
               </div>
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <a
-                        href="#"
-                        onClick={() => setOpen(true)}
-                        className={classNames(
-                          active ? "bg-gray-100" : "",
-                          "block px-4 py-2 text-sm text-gray-700"
-                        )}
-                      >
-                        Add PDF Document
-                      </a>
+              <div className="hidden sm:ml-6 sm:block">
+                <div className="flex space-x-4"></div>
+              </div>
+            </div>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+              <Menu as="div" className="relative ml-3">
+                <div>
+                  <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                    <span className="sr-only">Open menu</span>
+                    {session ? (
+                      <Image
+                        className="h-8 w-8 rounded-full"
+                        src={session.user?.image}
+                        alt="profile pic"
+                        width={500}
+                        height={500}
+                      />
+                    ) : (
+                      <></>
                     )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) =>
-                      status === "authenticated" ? (
-                        <a
-                          onClick={() => signOut()}
-                          type="button"
+                  </Menu.Button>
+                </div>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <Link
+                          href="#"
+                          onClick={() => setOpen(true)}
                           className={classNames(
                             active ? "bg-gray-100" : "",
                             "block px-4 py-2 text-sm text-gray-700"
                           )}
                         >
-                          <span className="sr-only">Login or Logout</span>
-                          Log out
-                        </a>
-                      ) : (
-                        <a
-                          onClick={() => signIn()}
-                          type="button"
-                          className={classNames(
-                            active ? "bg-gray-100" : "",
-                            "block px-4 py-2 text-sm text-gray-700"
-                          )}
-                        >
-                          <span className="sr-only">Login or Logout</span>
-                          Log in
-                        </a>
-                      )
-                    }
-                  </Menu.Item>
-                </Menu.Items>
-              </Transition>
-            </Menu>
+                          Add Document
+                        </Link>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) =>
+                        status === "authenticated" ? (
+                          <Link
+                          href="#"
+                            onClick={() => signOut()}
+                            type="button"
+                            className={classNames(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700"
+                            )}
+                          >
+                            <span className="sr-only">Login or Logout</span>
+                            Log out
+                          </Link>
+                        ) : (
+                          <Link
+                            onClick={() => signIn()}
+                            type="button"
+                            className={classNames(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700"
+                            )}
+                          >
+                            <span className="sr-only">Login or Logout</span>
+                            Log in
+                          </Link>
+                        )
+                      }
+                    </Menu.Item>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
-    <SlideOver onChange={changeHandler} onClick={handleSubmission} open={open} setOpen={setOpen}/>
+      </nav>
+      <SlideOver
+        onChange={changeHandler}
+        onClick={handleSubmit}
+        open={open}
+        setOpen={setOpen}
+      />
     </>
   );
 }

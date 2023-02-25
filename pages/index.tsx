@@ -9,19 +9,13 @@ const Home: NextPage = ({ reports }) => {
 
   if (status === "loading") {
     return (
-      <div className="max-w-xl m-auto">
         <CircularProgress />
-      </div>
     );
   }
   if (status === "authenticated") {
     return (
       <>
-        <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
-          <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
-            <ReportList reports={JSON.parse(reports)} />
-          </div>
-        </main>
+        <ReportList reports={JSON.parse(reports)} />
       </>
     );
   }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { CircularProgress } from "@mui/material";
 
-const Chatbot = ({ name, url }) => {
+const Chatbot = ({ name, url, fname }) => {
   const [messages, setMessages] = useState([]);
   const [userMessage, setUserMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,6 +35,7 @@ const Chatbot = ({ name, url }) => {
   const handleMessage = async () => {
     setLoading(true);
     const response = await fetch("/api/chatF", {
+      //chatF for test
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +45,7 @@ const Chatbot = ({ name, url }) => {
         history: history,
         file_name: name,
         url: url,
-        dname: "article",
+        dname: fname,
       }),
     });
 
@@ -55,7 +56,6 @@ const Chatbot = ({ name, url }) => {
     setUserMessage("");
 
     const data = await response.json();
-    console.log(data);
     if (data.result.error === "Unauthorized") {
       handleError();
       return;
@@ -90,8 +90,8 @@ const Chatbot = ({ name, url }) => {
   }, [messages]);
 
   return (
-    <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-5">
-      <div ref={messageListRef} className="mb-4">
+    <div className=" bg-gray-100 p-4 rounded-lg shadow-md mt-5">
+      <div ref={messageListRef} className="max-h-96 p-3 overflow-auto">
         {messages.map((message, i) => (
           <div
             key={i}
@@ -119,7 +119,7 @@ const Chatbot = ({ name, url }) => {
           </div>
         ))}
       </div>
-      <div className="flex mb-4">
+      <div className="flex mb-4 sticky bottom-2 inset-x-0">
         <input
           type="text"
           className="flex-grow rounded-lg border-gray-300 border p-2 mr-2"
@@ -135,7 +135,11 @@ const Chatbot = ({ name, url }) => {
           Send
         </button>
       </div>
-      {loading && <div className="text-center"><CircularProgress /></div>}
+      {loading && (
+        <div className="text-center">
+          <CircularProgress />
+        </div>
+      )}
     </div>
   );
 };

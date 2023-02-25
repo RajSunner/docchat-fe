@@ -60,7 +60,7 @@ model Report {
   id       String  @id @default(cuid())
   name     String
   url      String
-  embedded Boolean
+  fname    String
 
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

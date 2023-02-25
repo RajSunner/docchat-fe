@@ -5,13 +5,17 @@ import Head from "next/head";
 export default function Layout({ children }) {
   return (
     <>
-    <Navbar/>
       <Head>
           <title>Doc Chat</title>
           <link rel="icon" href="/favicon.ico" />
         </Head>
-      <main>{children}</main>
-      <Footer />
+        <Navbar/>
+        <main className="mx-auto max-w-3xl">
+        {children}
+        </main>
+        <Footer />
+        
+      
     </>
   )
 }

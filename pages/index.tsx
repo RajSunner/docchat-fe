@@ -5,6 +5,7 @@ import ReportList from "../components/Report";
 import client from "../lib/prismadb";
 
 const Home: NextPage = ({ reports }) => {
+  console.log(reports);
   const { status } = useSession();
 
   if (status === "loading") {
